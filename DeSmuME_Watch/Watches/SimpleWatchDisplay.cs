@@ -76,6 +76,8 @@ namespace DeSmuME_Watch
             }
         }
 
+        public bool displayChange = true;
+
 
         public SimpleWatchDisplay(IWatch32Bit watch, string name)
         {
@@ -90,21 +92,35 @@ namespace DeSmuME_Watch
 
         public void UpdateDisplayText()
         {
-            string valueStr;
+            string value;
+            string change;
             if (displayAsHex)
-                valueStr = watch.cValAsInt.ToString("X") + " (" + watch.getDiffAsInt().ToString("X") + ")";
+            {
+                value = watch.cValAsInt.ToString("X");
+                change = " (" + watch.getDiffAsInt().ToString("X") + ")";
+            }
             else if (displayAsFixedPoint)
             {
                 FixedPoint4Watch w = watch as FixedPoint4Watch;
-                valueStr = w.getValue().ToString("N" + digitsPastRadix) + " (" + w.getValue().ToString("N" + digitsPastRadix) + ")";
+                value = w.getValue().ToString("N" + digitsPastRadix);
+                change = " (" + w.getValue().ToString("N" + digitsPastRadix) + ")";
                 // TODO: Support unsigned values?
             }
             else if (displayAsSigned)
-                valueStr = watch.cValAsInt + " (" + watch.getDiffAsInt() + ")";
+            {
+                value = Convert.ToString(watch.cValAsInt);
+                change = " (" + watch.getDiffAsInt() + ")";
+            }
             else
-                valueStr = (uint)watch.cValAsInt + " (" + (uint)watch.getDiffAsInt() + ")";
+            {
+                value = Convert.ToString((uint)watch.cValAsInt);
+                change = " (" + (uint)watch.getDiffAsInt() + ")";
+            }
 
-            this.Text = watchName + ": " + valueStr;
+            string displayText = watchName + ": " + value;
+            if (displayChange)
+                displayText += change;
+            this.Text = displayText;
         }
     }
 }

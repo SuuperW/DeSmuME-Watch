@@ -10,11 +10,16 @@ namespace DeSmuME_Watch
         public WatchManager32Bit(IMemoryHacker32Bit memoryHacker)
         {
             memHacker = memoryHacker;
+            lua = new Lua.Lua(this);
         }
 
         private IMemoryHacker32Bit memHacker;
         private SortedDictionary<int, IWatch32Bit> vars = new SortedDictionary<int, IWatch32Bit>();
         private int _nextWatchID = 0;
+
+        private Lua.Lua lua;
+        public Lua.Lua GetLua()
+        { return lua; }
 
         public int AddWatch(IWatch32Bit w)
         {

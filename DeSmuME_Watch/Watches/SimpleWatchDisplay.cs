@@ -100,43 +100,66 @@ namespace DeSmuME_Watch
 
         public void UpdateDisplayText()
         {
-            string value;
-            string change;
-            if (displayAsHex)
-            {
-                value = watch.cValAsInt.ToString("X");
-                change = " (" + watch.getDiffAsInt().ToString("X") + ")";
-            }
-            else if (displayAsFixedPoint)
+            string displayText = watchName + ": ";
+            if (displayAsFixedPoint)
             {
                 FixedPoint4Watch w = watch as FixedPoint4Watch;
-                if (displayFixedPointExact)
-                {
-                    value = w.getValue().ExactStringValue();
-                    change = " (" + w.getDiff().ExactStringValue() + ")";
-                }
-                else
-                {
-                    value = w.getValue().ToString("N" + digitsPastRadix);
-                    change = " (" + w.getDiff().ToString("N" + digitsPastRadix) + ")";
-                }
-                // TODO: Support unsigned values?
-            }
-            else if (displayAsSigned)
-            {
-                value = Convert.ToString(watch.cValAsInt);
-                change = " (" + watch.getDiffAsInt() + ")";
+                displayText += FormatFixedPointValues(w.getValue(), w.getDiff(), displayChange, displayFixedPointExact, digitsPastRadix);
             }
             else
             {
-                value = Convert.ToString((uint)watch.cValAsInt);
-                change = " (" + (uint)watch.getDiffAsInt() + ")";
+                displayText += FormatIntegerValues(watch.cValAsInt, watch.getDiffAsInt(), displayChange, displayAsHex, displayAsSigned);
             }
 
-            string displayText = watchName + ": " + value;
-            if (displayChange)
-                displayText += change;
             SetText(displayText);
+        }
+
+        public static string FormatIntegerValues(int currentValue, int change, bool displayChange = true, bool asHex = false, bool asSigned = true)
+        {
+            string vStr;
+            string cStr;
+            if (asHex)
+            {
+                vStr = currentValue.ToString("X");
+                cStr = change.ToString("X");
+            }
+            else if (asSigned)
+            {
+                vStr = currentValue.ToString();
+                cStr = change.ToString();
+            }
+            else
+            {
+                vStr = Convert.ToString((uint)currentValue);
+                cStr = Convert.ToString((uint)change);
+            }
+
+            string ret = vStr;
+            if (displayChange)
+                ret += " (" + cStr + ")";
+
+            return ret;
+        }
+        public static string FormatFixedPointValues(DSFixedPoint4 currentValue, DSFixedPoint4 change, bool displayChange = true, bool exactDisplay = true, int digitsPastRadix = 0)
+        {
+            string vStr;
+            string cStr;
+            if (exactDisplay)
+            {
+                vStr = currentValue.ExactStringValue();
+                cStr = change.ExactStringValue();
+            }
+            else
+            {
+                vStr = currentValue.ToString("N" + digitsPastRadix);
+                cStr = change.ToString("N" + digitsPastRadix);
+            }
+
+            string ret = vStr;
+            if (displayChange)
+                ret += " (" + cStr + ")";
+
+            return ret;
         }
 
         private void SetText(string text)

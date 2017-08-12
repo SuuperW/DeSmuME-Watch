@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLua">
+      <HintPath>..\..\..\..\..\Downloads\Keeps\NLua.Win64\net45\NLua.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -41,16 +44,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DSFixedPoint4.cs" />
+    <Compile Include="Lua\Lua.cs" />
     <Compile Include="MemoryHackers\DSGameHacker.cs" />
     <Compile Include="MemoryHackers\IMemoryHacker32Bit.cs" />
     <Compile Include="MemoryHackers\MemoryHackerWindows.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Watches\IWatch.cs" />
+    <Compile Include="Watches\IWatchDisplay.cs" />
+    <Compile Include="Watches\LuaWatch.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Watches\SimpleWatchDisplay.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Watches\SimpleWatches.cs" />
     <Compile Include="Watches\WatchManager32Bit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -28,6 +28,14 @@ namespace DeSmuME_Watch
         {
             return this.AsFloat().ToString(format);
         }
+        public string ExactStringValue()
+        {
+            string value = (this < 0 && this > -1) ? "-" : "";
+            value += Math.Truncate(this).ToString();
+            value += "|" + Math.Abs(v % 4096).ToString().PadLeft(4, '0');
+
+            return value;
+        }
 
         // Implicit conversions
         public static implicit operator DSFixedPoint4(float val)

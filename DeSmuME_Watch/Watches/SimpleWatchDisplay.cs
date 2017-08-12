@@ -33,6 +33,7 @@ namespace DeSmuME_Watch
                     _displayAsFixedPoint = true;
                 }
                 _digitsPastRadix = value;
+                displayFixedPointExact = false;
             }
         }
         public bool displayAsFixedPoint
@@ -51,6 +52,7 @@ namespace DeSmuME_Watch
                 _displayAsFixedPoint = value;
             }
         }
+        public bool displayFixedPointExact;
         public bool displayAsSigned
         {
             get { return _displayAsSigned; }
@@ -90,6 +92,7 @@ namespace DeSmuME_Watch
             displayAsFixedPoint = false;
             displayAsHex = false;
             displayAsSigned = true;
+            displayFixedPointExact = true;
 
             this.AutoSize = true;
             SetText(name + ": ?");
@@ -107,8 +110,16 @@ namespace DeSmuME_Watch
             else if (displayAsFixedPoint)
             {
                 FixedPoint4Watch w = watch as FixedPoint4Watch;
-                value = w.getValue().ToString("N" + digitsPastRadix);
-                change = " (" + w.getDiff().ToString("N" + digitsPastRadix) + ")";
+                if (displayFixedPointExact)
+                {
+                    value = w.getValue().ExactStringValue();
+                    change = " (" + w.getDiff().ExactStringValue() + ")";
+                }
+                else
+                {
+                    value = w.getValue().ToString("N" + digitsPastRadix);
+                    change = " (" + w.getDiff().ToString("N" + digitsPastRadix) + ")";
+                }
                 // TODO: Support unsigned values?
             }
             else if (displayAsSigned)

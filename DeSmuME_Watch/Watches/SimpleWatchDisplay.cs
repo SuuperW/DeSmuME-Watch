@@ -40,10 +40,12 @@ namespace DeSmuME_Watch
             get { return _displayAsFixedPoint; }
             set
             {
-                if (!(watch is FixedPoint4Watch))
-                    throw new Exception("Cannot display an integer watch as fixed point.");
                 if (value)
+                {
+                    if (!(watch is FixedPoint4Watch))
+                        throw new Exception("Cannot display an integer watch as fixed point.");
                     _displayAsHex = false;
+                }
                 else
                     _digitsPastRadix = 0;
                 _displayAsFixedPoint = value;
@@ -85,10 +87,11 @@ namespace DeSmuME_Watch
             this.watchName = name;
 
             digitsPastRadix = 0;
-            displayAsFixedPoint = true;
+            displayAsFixedPoint = false;
             displayAsHex = false;
             displayAsSigned = true;
 
+            this.AutoSize = true;
             SetText(name + ": ?");
         }
 

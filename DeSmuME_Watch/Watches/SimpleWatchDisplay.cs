@@ -11,7 +11,7 @@ namespace DeSmuME_Watch
      * 
      */
 
-    public class SimpleWatchDisplay : Label
+    public class SimpleWatchDisplay : Label, IWatchDisplay
     {
         public IWatch32Bit watch;
         public string watchName;
@@ -88,6 +88,8 @@ namespace DeSmuME_Watch
             displayAsFixedPoint = true;
             displayAsHex = false;
             displayAsSigned = true;
+
+            SetText(name + ": ?");
         }
 
         public void UpdateDisplayText()
@@ -103,7 +105,7 @@ namespace DeSmuME_Watch
             {
                 FixedPoint4Watch w = watch as FixedPoint4Watch;
                 value = w.getValue().ToString("N" + digitsPastRadix);
-                change = " (" + w.getValue().ToString("N" + digitsPastRadix) + ")";
+                change = " (" + w.getDiff().ToString("N" + digitsPastRadix) + ")";
                 // TODO: Support unsigned values?
             }
             else if (displayAsSigned)
@@ -120,7 +122,15 @@ namespace DeSmuME_Watch
             string displayText = watchName + ": " + value;
             if (displayChange)
                 displayText += change;
-            this.Text = displayText;
+            SetText(displayText);
+        }
+
+        private void SetText(string text)
+        {
+            if (this.InvokeRequired)
+                this.Invoke((Action)(() => this.Text = text));
+            else
+                this.Text = text;
         }
     }
 }

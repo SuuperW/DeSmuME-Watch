@@ -6,9 +6,6 @@ namespace DeSmuME_Watch
     /*
      * I need to have some way of having a collection of watches/structure.
      * I need to have some way of displaying values from said collection.
-     * I need to have some way of displaying calculated values.
-     * 
-     * 
      */
 
     public class SimpleWatchDisplay : Label, IWatchDisplay

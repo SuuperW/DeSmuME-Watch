@@ -5,7 +5,7 @@ namespace DeSmuME_Watch
     public abstract class AbstractWatch : IWatch32Bit
     {
         // IWatch
-        public uint[] offsets { get; set; }
+        public int[] offsets { get; set; }
 
         protected int _cValAsInt;
         public int cValAsInt { get { return _cValAsInt; } }
@@ -19,12 +19,12 @@ namespace DeSmuME_Watch
         public abstract object currentValue { get; }
 
         // Constructors
-        public AbstractWatch(uint[] offsets)
+        public AbstractWatch(int[] offsets)
         { this.offsets = offsets; }
-        public AbstractWatch(uint address)
-        { offsets = new uint[] { address }; }
-        public AbstractWatch(uint pointer, uint offset)
-        { offsets = new uint[] { pointer, offset }; }
+        public AbstractWatch(int address)
+        { offsets = new int[] { address }; }
+        public AbstractWatch(int pointer, int offset)
+        { offsets = new int[] { pointer, offset }; }
     }
 
     /// <summary>
@@ -45,9 +45,9 @@ namespace DeSmuME_Watch
         #endregion
 
         // constructors, why are these required? >:(
-        public ByteWatch(uint[] offsets) : base(offsets) { }
-        public ByteWatch(uint address) : base(address) { }
-        public ByteWatch(uint pointer, uint offset) : base(pointer, offset) { }
+        public ByteWatch(int[] offsets) : base(offsets) { }
+        public ByteWatch(int address) : base(address) { }
+        public ByteWatch(int pointer, int offset) : base(pointer, offset) { }
 
         // Other
         public byte cValAsByte { get { return (byte)_cValAsInt; } }
@@ -71,9 +71,9 @@ namespace DeSmuME_Watch
         #endregion
 
         // constructors, why are these required? >:(
-        public ShortWatch(uint[] offsets) : base(offsets) { }
-        public ShortWatch(uint address) : base(address) { }
-        public ShortWatch(uint pointer, uint offset) : base(pointer, offset) { }
+        public ShortWatch(int[] offsets) : base(offsets) { }
+        public ShortWatch(int address) : base(address) { }
+        public ShortWatch(int pointer, int offset) : base(pointer, offset) { }
 
         // Other
         public short cValAsShort { get { return (short)_cValAsInt; } }
@@ -97,9 +97,9 @@ namespace DeSmuME_Watch
         #endregion
 
         // constructors, why are these required? >:(
-        public IntWatch(uint[] offsets) : base(offsets) { }
-        public IntWatch(uint address) : base(address) { }
-        public IntWatch(uint pointer, uint offset) : base(pointer, offset) { }
+        public IntWatch(int[] offsets) : base(offsets) { }
+        public IntWatch(int address) : base(address) { }
+        public IntWatch(int pointer, int offset) : base(pointer, offset) { }
     }
 
     /// <summary>
@@ -121,9 +121,9 @@ namespace DeSmuME_Watch
         #endregion
 
         // Constructors
-        public FixedPoint4Watch(uint[] offsets) : base(offsets) { }
-        public FixedPoint4Watch(uint address) : base(address) { }
-        public FixedPoint4Watch(uint pointer, uint offset) : base(pointer, offset) { }
+        public FixedPoint4Watch(int[] offsets) : base(offsets) { }
+        public FixedPoint4Watch(int address) : base(address) { }
+        public FixedPoint4Watch(int pointer, int offset) : base(pointer, offset) { }
 
         // Other
         private DSFixedPoint4 value = new DSFixedPoint4(0);

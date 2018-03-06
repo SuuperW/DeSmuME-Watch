@@ -2,6 +2,7 @@
 
 using NLua;
 
+// This namespace will be exposed to Lua scripts.
 namespace DeSmuME_Watch.Lua
 {
     public class Lua
@@ -12,8 +13,6 @@ namespace DeSmuME_Watch.Lua
         }
 
         private WatchManager32Bit watchManager;
-
-        public string test = "test";
 
         public int GetWatchValueAsInt(int watchID)
         {

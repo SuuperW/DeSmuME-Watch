@@ -47,9 +47,10 @@
     <Compile Include="Lua\Lua.cs" />
     <Compile Include="MemoryHackers\DSGameHacker.cs" />
     <Compile Include="MemoryHackers\IMemoryHacker32Bit.cs" />
+    <Compile Include="MemoryHackers\IMemoryHacker64Bit.cs" />
     <Compile Include="MemoryHackers\MemoryHackerWindows.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Watches\IWatch.cs" />
+    <Compile Include="Watches\IWatch32Bit.cs" />
     <Compile Include="Watches\IWatchDisplay.cs" />
     <Compile Include="Watches\LuaWatch.cs">
       <SubType>Component</SubType>

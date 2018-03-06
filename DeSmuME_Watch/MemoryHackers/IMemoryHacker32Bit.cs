@@ -4,19 +4,19 @@ namespace DeSmuME_Watch
 {
     public interface IMemoryHacker32Bit : IDisposable
     {
-        byte[] ReadBytes(uint MemoryAddress, int Count);
-        void WriteBytes(uint MemoryAddress, byte[] val);
+        byte[] ReadBytes(int MemoryAddress, int Count);
+        void WriteBytes(int MemoryAddress, byte[] val);
 
-        byte ReadByte(uint MemoryAddress);
-        void WriteByte(uint MemoryAddress, byte val);
+        byte ReadByte(int MemoryAddress);
+        void WriteByte(int MemoryAddress, byte val);
 
-        short ReadShort(uint MemoryAddress);
-        void WriteShort(uint MemoryAddress, short val);
+        short ReadShort(int MemoryAddress);
+        void WriteShort(int MemoryAddress, short val);
 
-        int ReadInteger(uint MemoryAddress);
-        void WriteInteger(uint MemoryAddress, int val);
-        uint ReadUInteger(uint MemoryAddress);
-        void WriteUInteger(uint MemoryAddress, uint val);
+        int ReadInteger(int MemoryAddress);
+        void WriteInteger(int MemoryAddress, int val);
+        uint ReadUInteger(int MemoryAddress);
+        void WriteUInteger(int MemoryAddress, uint val);
 
         event Action Updated;
     }

@@ -31,11 +31,11 @@ namespace DeSmuME_Watch
         public void RemoveWatch(int handle) { vars.Remove(handle); }
         public bool ContainsWatch(int handle) { return vars.ContainsKey(handle); }
 
-        private uint GetAddress(IWatch32Bit watch)
+        private int GetAddress(IWatch32Bit watch)
         {
-            uint address = watch.offsets[0];
+            int address = watch.offsets[0];
             for (int i = 1; i < watch.offsets.Length; i++)
-                address = memHacker.ReadUInteger(address) + watch.offsets[i];
+                address = memHacker.ReadInteger(address) + watch.offsets[i];
 
             return address;
         }

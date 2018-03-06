@@ -8,36 +8,33 @@ namespace DeSmuME_Watch
 {
     public class DSGameHacker : IMemoryHacker32Bit
     {
-
-        int _cfPtr = 0x4FF5368; // Current Frame
-        int _sslOff = 0x5EB7758; // Save State Load
+        long _cfPtr = 0x4FF5368; // Current Frame
+        long _sslOff = 0x5EB7758; // Save State Load
         public int CurrentFrame
         {
-            // v10: 4FF4808
-            // v9: 4FF5368
-            get { return mem.ReadInteger((IntPtr)_cfPtr + (int)mem.TargetProcess.MainModule.BaseAddress); }
-            set { mem.WriteInteger((IntPtr)_cfPtr + (int)mem.TargetProcess.MainModule.BaseAddress, value); }
+            get { return mem.ReadInteger(new IntPtr(_cfPtr + mem.TargetProcess.MainModule.BaseAddress.ToInt64())); }
+            set { mem.WriteInteger(new IntPtr(_cfPtr + (long)mem.TargetProcess.MainModule.BaseAddress), value); }
         }
         public bool justLoadedState
         {
-            get { return mem.ReadInteger((IntPtr)_sslOff + (int)mem.TargetProcess.MainModule.BaseAddress) == 0; }
+            get { return mem.ReadInteger(new IntPtr(_sslOff + (long)mem.TargetProcess.MainModule.BaseAddress)) == 0; }
         }
         private void unsetJustLoadedState()
         {
-            mem.WriteInteger(mem.TargetProcess.MainModule.BaseAddress + _sslOff, 1);
+            mem.WriteInteger(new IntPtr(mem.TargetProcess.MainModule.BaseAddress.ToInt64() + _sslOff), 1);
         }
         private int lastFrame = -1;
 
         public event Action Updated;
 
         public MemoryHackerWindows mem;
-        public uint gameMemory { get; private set; }
+        public long gameMemory { get; private set; }
 
         public string DeSmuMEVersion { get; private set; }
         public void FindMemory(string ver = "9")
         {
             DeSmuMEVersion = ver;
-            uint emuPtr = 0xEE3FE0;
+            long emuPtr = 0xEE3FE0;
             _cfPtr = 0x4FF5368;
             if (ver == "9")
                 ver = "DeSmuME_0.9.9_x86";
@@ -53,6 +50,12 @@ namespace DeSmuME_Watch
                 _cfPtr = 0x4FAA208;
                 ver = "DeSmuME_0.9.11_x86";
             }
+            else if (ver == "12")
+            {
+                emuPtr = 0x3a40300;
+                _cfPtr = 0x4f4bbf0;
+                ver = "DeSmuME_0.9.12.1";
+            }
             else
             {
                 emuPtr = 0x2CFF600;
@@ -64,7 +67,7 @@ namespace DeSmuME_Watch
                 MessageBox.Show("Could not find" + ver + ". Please open the program, start a movie, and try again.");
 
             mem = new MemoryHackerWindows(emus[0]);
-            gameMemory = emuPtr + (uint)mem.TargetProcess.MainModule.BaseAddress;
+            gameMemory = emuPtr + mem.TargetProcess.MainModule.BaseAddress.ToInt64();
 
             StartFrameAndStateChecks();
         }
@@ -121,18 +124,21 @@ namespace DeSmuME_Watch
             stop = true;
         }
 
-        public uint GetAddress(IWatch32Bit watch)
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoOptimization)]
+        public int GetAddress(IWatch32Bit watch)
         {
-            uint address = (uint)watch.offsets[0];
+            int address = (int)watch.offsets[0];
             for (int i = 1; i < watch.offsets.Length; i++)
-                address = ReadUInteger(address) + watch.offsets[i];
+                address = ReadInteger(address) + watch.offsets[i];
 
             return address;
         }
-        public uint GetCEAddress(IWatch32Bit watch)
-        { return GetAddress(watch) + gameMemory; }
+        public long GetCEAddress(IWatch32Bit watch)
+        {
+            return DSAddressToCEAddress(GetAddress(watch));
+        }
 
-        private uint ConvertFromEmuPtr(uint emuPtr)
+        private long DSAddressToCEAddress(int emuPtr)
         {
             // These ranges are in the emulator's memory in order of 0x01 range, 0x027 range, 0x02 range. Nothing between them.
             if (emuPtr >= 0x02000000 && emuPtr < 0x02400000)
@@ -142,63 +148,71 @@ namespace DeSmuME_Watch
             else if (emuPtr >= 0x027E0000 && emuPtr < 0x027E4000)
                 return emuPtr + gameMemory - 0x7E4000;
             else
-                throw new Exception("Attempted to read an emulated address that does not exist!");
+                return -1;
         }
 
-        public int ReadInteger(uint p)
+        public int ReadInteger(int p)
         {
-            p += gameMemory;
-            return mem.ReadInteger((IntPtr)p);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr == -1) return 0;
+            return mem.ReadInteger((IntPtr)ptr);
         }
-        public void WriteInteger(uint p, int val)
+        public void WriteInteger(int p, int val)
         {
-            p += gameMemory;
-            mem.WriteInteger((IntPtr)p, val);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr != -1)
+                mem.WriteInteger((IntPtr)ptr, val);
         }
-        public uint ReadUInteger(uint p)
+        public uint ReadUInteger(int p)
         {
-            p += gameMemory;
-            return mem.ReadUInteger((IntPtr)p);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr == -1) return 0;
+            return mem.ReadUInteger((IntPtr)ptr);
         }
-        public void WriteUInteger(uint p, uint val)
+        public void WriteUInteger(int p, uint val)
         {
-            p += gameMemory;
-            mem.WriteUInteger((IntPtr)p, val);
-        }
-
-        public short ReadShort(uint p)
-        {
-            p += gameMemory;
-            return mem.ReadShort((IntPtr)p);
-        }
-        public void WriteShort(uint p, short val)
-        {
-            p += gameMemory;
-            mem.WriteShort((IntPtr)p, val);
-            return;
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr != -1)
+                mem.WriteUInteger((IntPtr)ptr, val);
         }
 
-        public byte ReadByte(uint p)
+        public short ReadShort(int p)
         {
-            p += gameMemory;
-            return mem.ReadByte((IntPtr)p);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr == -1) return 0;
+            return mem.ReadShort((IntPtr)ptr);
         }
-        public void WriteByte(uint p, byte val)
+        public void WriteShort(int p, short val)
         {
-            p += gameMemory;
-            mem.WriteByte((IntPtr)p, val);
-            return;
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr != -1)
+                mem.WriteShort((IntPtr)ptr, val);
         }
 
-        public byte[] ReadBytes(uint p, int len)
+        public byte ReadByte(int p)
         {
-            p += gameMemory;
-            return mem.ReadMemory((IntPtr)p, len);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr == -1) return 0;
+            return mem.ReadByte((IntPtr)ptr);
         }
-        public void WriteBytes(uint p, byte[] val)
+        public void WriteByte(int p, byte val)
         {
-            p += gameMemory;
-            mem.WriteMemory((IntPtr)p, val);
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr != -1)
+                mem.WriteByte((IntPtr)ptr, val);
+        }
+
+        public byte[] ReadBytes(int p, int len)
+        {
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr == -1) return null;
+            return mem.ReadMemory((IntPtr)ptr, len);
+        }
+        public void WriteBytes(int p, byte[] val)
+        {
+            long ptr = DSAddressToCEAddress(p);
+            if (ptr != -1)
+                mem.WriteMemory((IntPtr)ptr, val);
         }
 
         public void Dispose()

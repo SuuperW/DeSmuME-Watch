@@ -7,6 +7,11 @@ namespace DeSmuME_Watch
 {
     public class LuaWatch : Label, IWatchDisplay
     {
+        /// <summary>
+        /// A label for displaying values obtained through Lua scripts.
+        /// </summary>
+        /// <param name="filePath">The path to the Lua script. The script must contain a GetValue() function, which returns the desired text to be displayed.</param>
+        /// <param name="lua">Obtained by calling GetLua() on a WatchManager32Bit.</param>
         public LuaWatch(string filePath, Lua.Lua lua)
         {
             NLua.Lua n = new NLua.Lua();
